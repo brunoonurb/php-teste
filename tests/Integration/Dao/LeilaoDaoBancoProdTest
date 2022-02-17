@@ -1,0 +1,41 @@
+<?php
+
+namespace Alura\Leilao\Tests\Integration;
+
+use Alura\Leilao\Dao\Leilao as LeilaoDao;
+use Alura\Leilao\Infra\ConnectionCreator;
+use Alura\Leilao\Model\Leilao;
+use PDO;
+use PHPUnit\Framework\TestCase;
+
+class LeilaoDaoBancoProdTest extends TestCase
+{/** @var PDO */
+    private $pdo;
+     protected function setUp(): void
+    {
+        $this->pdo = ConnectionCreator::getConnection();
+        $this->pdo->beginTransaction();
+    }
+    public function testeInsercaoBucaDevemFuncionAR()
+    {
+
+        $leilao = new Leilao('Variante 0 km');
+        
+        $leilaoDao = new LeilaoDao($this->pdo);
+
+        $leilaoDao->salva($leilao);
+
+        $leiloes = $leilaoDao->recuperarNaoFinalizados();
+
+        self::assertCount(1, $leiloes);
+        self::assertContainsOnlyInstancesOf(Leilao::class, $leiloes);
+        self::assertSame('Variante 0 km', $leiloes[0]->recuperarDescricao());
+        
+    }
+    
+    protected function tearDown(): void
+    {
+        // cleardow deletar os dados no banco para não falhar os testes
+        $this->pdo->rollBack();
+    }
+}

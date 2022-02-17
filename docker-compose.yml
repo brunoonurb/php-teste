@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+  exemplo:
+    build: .
+    restart: always
+    ports:
+      - "8081:80"
+    volumes:
+      - .:/var/www/app
+      - ~/.composer:/home/root/.composer
+
+networks:
+  default:
+    driver: bridge
