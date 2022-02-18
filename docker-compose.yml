@@ -9,7 +9,7 @@ services:
       - "8081:80"
     volumes:
       - .:/var/www/app
-      - ~/.composer:/home/root/.composer
+      - /var/www/app/vendor/
 
 networks:
   default:

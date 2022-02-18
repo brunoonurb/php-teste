@@ -69,7 +69,27 @@ class LeilaoDaoTest extends TestCase
 
         self::assertCount(1, $leiloes);
         self::assertContainsOnlyInstancesOf(Leilao::class, $leiloes);
-        self::assertSame('Variante 0 km', $leiloes[0]->recuperarDescricao());
+        self::assertSame('Flat 147 0km', $leiloes[0]->recuperarDescricao());
+        self::assertTrue($leiloes[0]->estaFinalizado());
+    }
+
+    public function testAoAtualizarLeilaoStatusDeveSerAlterado()
+    {
+        $leilao = new Leilao('Brasília Amarela');
+        $leilaoDao = new LeilaoDao(self::$pdo);
+        $leilao = $leilaoDao->salva($leilao);
+
+        $leiloes = $leilaoDao->recuperarNaoFinalizados();
+        self::assertCount(1, $leiloes);
+        self::assertSame('Brasília Amarela', $leiloes[0]->recuperarDescricao());
+        self::assertFalse($leiloes[0]->estaFinalizado());
+
+        $leilao->finaliza();
+        $leilaoDao->atualiza($leilao);
+
+        $leiloes = $leilaoDao->recuperarFinalizados();
+        self::assertCount(1, $leiloes);
+        self::assertSame('Brasília Amarela', $leiloes[0]->recuperarDescricao());
         self::assertTrue($leiloes[0]->estaFinalizado());
     }
 
